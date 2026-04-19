@@ -26,6 +26,10 @@ PAVAS is a physics-aware video-to-audio synthesis system built on top of MMAudio
 </p>
 
 <p align="center">
+Code and additional assets will be released progressively.
+</p>
+
+<p align="center">
   <img src="teaser_pavas.png" alt="PAVAS teaser" width="70%">
 </p>
 
