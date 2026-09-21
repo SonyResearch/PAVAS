@@ -1,0 +1,15 @@
+# Reference worksheet only. Hydra does not load this file.
+# Set active paths in configs/data/base.yaml and configs/base_config.yaml.
+
+dataset:
+  vggsound_root: /path/to/vggsound
+  mmaudio_cache_root: /path/to/mmaudio_cache
+
+ppe:
+  mass_root: /path/to/ppe/mass
+  velocity_root: /path/to/ppe/velocity
+  seg_root: /path/to/ppe/segmentation
+
+weights:
+  ext_weights_root: /path/to/ext_weights
+  checkpoint: /path/to/your/pavas_checkpoint.pth

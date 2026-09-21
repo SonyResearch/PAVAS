@@ -1,0 +1,45 @@
+# @package _global_
+defaults:
+  - /train_config
+  - _self_
+
+exp_id: pavas_finetune
+# Change this to one of: small_16k, medium_44k, large_44k
+model: small_16k
+
+batch_size: 512
+eval_batch_size: 32
+num_iterations: 30_000
+learning_rate: 1.0e-5
+linear_warmup_steps: 1_000
+lr_schedule: step
+lr_schedule_steps: [20_000, 26_000]
+lr_schedule_gamma: 0.1
+
+use_delta_mod: true
+null_object_condition_probability: 0.1
+save_checkpoint_interval: 15_000
+eval_interval: 1_000
+val_interval: 120_000
+eval_max_batches: 64
+
+object_cond:
+  obj_prune:
+    global_top_k: 5
+    per_prompt_top_k: null
+  patch_mod:
+    pre_agg: false
+  mass_pool: gate
+  vel_pool: gate
+  runtime_mass_clip: 10000
+  use_stats_json: true
+  stats_json: ./stats/object_cond_train_log1p.json
+  fourier:
+    mode: 2K
+  norm:
+    mass:
+      use_log1p: true
+      use_z: true
+    velocity:
+      use_log1p: false
+      use_z: true

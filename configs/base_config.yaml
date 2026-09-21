@@ -1,0 +1,162 @@
+defaults:
+  - data: base
+  - eval_data: base
+  - override hydra/job_logging: custom-simplest
+  - _self_
+
+hydra:
+  run:
+    dir: ./output/${exp_id}-${now:%Y-%m-%d_%H-%M-%S}
+  output_subdir: ${now:%Y-%m-%d_%H-%M-%S}-hydra
+
+enable_email: False
+
+model: small_16k
+use_delta_mod: false   # Δ-modulation toggle.
+multiply_mass_vel: false  # p=m*v
+
+exp_id: default
+debug: False
+debug_single_process: False  # set True to skip distributed initialization for local debugging
+cudnn_benchmark: True
+compile: True
+compile_features: False  # whether to torch.compile() the features (VAE/vocoder) stack; keep False for stability
+amp: True
+weights: null
+checkpoint: null
+seed: 14159265
+num_workers: 10 # per-GPU
+pin_memory: False # set to True if your system can handle it, i.e., have enough memory
+architecture_debug: False # print shapes and statistics during forward passes
+eval_at_start: false  # if true, run one evaluation (eval_loader) at iteration 0 before training loop
+
+# diagnostics & visualization (compile-safe; rank0 only)
+diagnostics:
+  enabled: true
+  every_n: 50
+  coverage_thresholds: [0.5]
+  visualize: false
+  visualize_every_n: 200
+
+# Weights & Biases (optional)
+# Enable to mirror all tensorboard scalar/histogram logs to wandb (rank0 only)
+# Usage:
+#   python train.py wandb.enable=true wandb.project=your_project wandb.entity=your_entity
+# Environment:
+#   export WANDB_API_KEY=xxxxxxxxxxxxxxxxxxxxxxxx
+wandb:
+  enable: false         # set true to enable
+  project: mmaudio      # wandb project name
+  entity: null          # your wandb entity/org (null -> default user)
+  group: null           # optional grouping by exp_id or sweep
+  name: ${exp_id}       # run name
+  tags: []              # extra tags
+  mode: online          # online | offline | disabled
+  id: null              # set to resume a specific run id
+  resume: null          # 'allow' | 'must' | 'never'
+  watch_model: false    # set true to call wandb.watch(model)
+  log_code: false       # if true, wandb will attempt to snapshot code
+  log_audio: false      # if true, extra audio artifacts logged at log_extra_interval (can be large)
+  max_audio_log: 4      # max number of audio clips per logging event
+  audio_rate: 16000     # default audio sample rate
+  flush_interval: 10    # wandb scalar/log flush interval (steps). Scalars buffered and flushed every N steps.
+  tmp_dir: null         # optional override for wandb internal temp (media) directory; if null uses system /tmp
+  config_upload: minimal  # minimal | full (full attempts to upload full Hydra cfg)
+  val_preview_enable: true   # if true, log paired GT/pred (audio/spec/video) on validation
+  val_preview_count: 2       # number of samples from first val batch to preview
+
+# object-conditional modulation (mass/velocity and patch-wise options)
+object_cond:
+  lambda_mass: 1.0   # scale for mass-conditioned branch added to frame-wise context
+  lambda_vel: 1.0    # scale for velocity-conditioned branch added to frame-wise context
+  use_global: false  # do not use global object-conditioned vector (only frame-wise mass/velocity injection)
+  # pooling modes for object -> frame aggregation (options: mean, gate)
+  mass_pool: gate    # presence-weighted mean if 'mean', learned gating if 'gate'
+  vel_pool: gate     # presence-weighted mean if 'mean', learned gating if 'gate'
+  runtime_mass_clip: 10000  # clip raw mass_f before log1p/z-score (added)
+  # external stats json (produced by tools/compute_object_condition_stats.py)
+  use_stats_json: true
+  stats_json: ./stats/object_cond_train_log1p.json  # Ignored if the file does not exist.
+  # (optional) future knob: occ_gate_alpha (fractional weight for occluded frames when using custom presence mixing)
+  # occ_gate_alpha: 0.3
+  # offline normalization (z-score) for scalar mass_f & velocity_f before embedding
+  norm:
+    enable: true       # set false to bypass normalization
+    epsilon: 1e-6      # numerical stability
+    clip: null         # optionally clip normalized values to [-clip, clip]; null to disable
+    pre_obj_layernorm: true   # apply LayerNorm to f_obj_h before FiLM
+    mass:
+      use_log1p: true   # Apply log1p(mass); log-space statistics are required.
+      use_z: true       # Apply z-score normalization after log1p.
+    velocity:
+      use_log1p: false  # For fine-tuning, keep velocity in linear space and apply only z-score normalization.
+      use_z: true
+
+  fourier:
+    enable_mass: True
+    enable_velocity: True
+    mode: "2K"
+    K: 16
+    freq_max: 128.0
+    dc_free_cos: True
+
+  # filled by tools/compute_object_condition_stats.py output
+  mass_norm: { mean: 0.0, std: 1.0 }         # Fallback values overridden when stats_json is loaded.
+  vel_norm:  { mean: 0.0, std: 1.0 }
+  mass_log_norm: { mean: 0.0, std: 1.0 }      # fallback
+  vel_log_norm:  { mean: 0.0, std: 1.0 }      # fallback
+  # Multi-prompt merge is ALWAYS enabled now (all prompt_id dirs are concatenated). load_all_prompts flag removed.
+  patch_mod:
+    pre_agg: false   # if true, apply FiLM at patch level (before aggregating patches)
+  obj_prune:
+    # Global Hard Top-K over objects per sample before padding, based on presence coverage.
+    global_top_k: 5      # fine-tune: global pruning K=5
+    per_prompt_top_k: null # e.g., 2 (null to disable). Apply K within each prompt_id independently (after merging all prompts). Mutually exclusive with global_top_k.
+    diverse_round_robin: false # (currently unused with mutual exclusivity, kept for future multi-stage selection experiments)
+  temporal_smooth:
+    enable: true     # depthwise Conv1d residual on (B,O,T,Dh) before pooling
+    kernel: 5        # Odd kernel size; even values are incremented internally.
+    mass: true       # apply to mass branch
+    velocity: true   # apply to velocity branch
+
+# NOTE: This DOSE NOT affect the model during inference in any way
+# they are just for the dataloader to fill in the missing data in multi-modal loading
+# to change the sequence length for the model, see networks.py
+data_dim:
+  text_seq_len: 77
+  clip_dim: 1024
+  sync_dim: 768
+  text_dim: 1024
+
+# ema configuration
+ema:
+  enable: True 
+  sigma_rels: [0.05, 0.1]
+  update_every: 1
+  checkpoint_every: 5_000
+  checkpoint_folder: ${hydra:run.dir}/ema_ckpts
+  default_output_sigma: 0.05
+
+
+# sampling
+sampling:
+  mean: 0.0
+  scale: 1.0
+  min_sigma: 0.0
+  method: euler
+  num_steps: 25
+
+# classifier-free guidance
+null_condition_probability: 0.1
+null_object_condition_probability: 0.1
+
+cfg_strength: 4.5
+
+# raw video root (used to reconstruct {video_id}.mp4 for preview logging)
+video_root: null
+
+# checkpoint paths to external modules
+vae_16k_ckpt: ./ext_weights/v1-16.pth
+vae_44k_ckpt: ./ext_weights/v1-44.pth
+bigvgan_vocoder_ckpt: ./ext_weights/best_netG.pt
+synchformer_ckpt: ./ext_weights/synchformer_state_dict.pth

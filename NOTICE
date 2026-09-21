@@ -1,0 +1,8 @@
+The original PAVAS code in this repository is released under the MIT License.
+
+This repository also includes third-party components under `pavas/` and
+`precompute/ppe/`. Those vendored components remain subject to their respective
+upstream license and attribution requirements.
+
+For convenience, copies of relevant third-party license and notice files are
+also collected under `third_party_licenses/`.

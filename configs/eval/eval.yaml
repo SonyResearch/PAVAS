@@ -1,0 +1,13 @@
+# @package _global_
+defaults:
+  - /eval_config
+  - _self_
+
+exp_id: pavas_eval
+# Change this to one of: small_16k, medium_44k, large_44k
+model: small_16k
+use_delta_mod: true
+dataset: vggsound
+duration_s: 8.0
+batch_size: 16
+output_name: null

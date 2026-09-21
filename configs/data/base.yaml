@@ -1,0 +1,107 @@
+finetune:
+  enabled: true
+  split: train
+
+VGGSound:
+  root: /path/to/vggsound/video
+  subset_name: sets/vgg3-train.tsv
+  fps: 8
+  height: 384
+  width: 384
+  sample_duration_sec: 8.0
+
+VGGSound_test:
+  root: /path/to/vggsound/video
+  subset_name: sets/vgg3-test.tsv
+  fps: 8
+  height: 384
+  width: 384
+  sample_duration_sec: 8.0
+
+VGGSound_val:
+  root: /path/to/vggsound/video
+  subset_name: sets/vgg3-val.tsv
+  fps: 8
+  height: 384
+  width: 384
+  sample_duration_sec: 8.0
+
+ExtractedVGG:
+  tag: train
+  tsv: /path/to/mmaudio_cache/vgg-train.tsv
+  memmap_dir: /path/to/mmaudio_cache/vgg-train
+  object_cond:
+    enabled: true
+    enable_patch_attn: true
+    mass_root: /path/to/ppe/mass
+    velocity_root: /path/to/ppe/velocity
+    seg_root: /path/to/ppe/segmentation
+    skip_no_prompt: true
+  clip_patches:
+    tsv: /path/to/clip_patches/train/vgg-patches.tsv
+    npy: /path/to/clip_patches/train/vgg-patches/clip_patches.npy
+    cache_items: 128
+
+ExtractedVGG_test:
+  tag: test
+  gt_cache: /path/to/av_benchmark_cache/vggsound-test
+  output_subdir: null
+  tsv: /path/to/mmaudio_cache/vgg-test.tsv
+  memmap_dir: /path/to/mmaudio_cache/vgg-test
+  object_cond:
+    enabled: true
+    enable_patch_attn: true
+    mass_root: /path/to/ppe/mass
+    velocity_root: /path/to/ppe/velocity
+    seg_root: /path/to/ppe/segmentation
+    skip_no_prompt: true
+  clip_patches:
+    tsv: /path/to/clip_patches/test/vgg-patches.tsv
+    npy: /path/to/clip_patches/test/vgg-patches/clip_patches.npy
+    cache_items: 128
+
+ExtractedVGG_val:
+  tag: val
+  gt_cache: /path/to/av_benchmark_cache/vggsound-val
+  output_subdir: val
+  tsv: /path/to/mmaudio_cache/vgg-val.tsv
+  memmap_dir: /path/to/mmaudio_cache/vgg-val
+  object_cond:
+    enabled: true
+    enable_patch_attn: true
+    mass_root: /path/to/ppe/mass
+    velocity_root: /path/to/ppe/velocity
+    seg_root: /path/to/ppe/segmentation
+    skip_no_prompt: true
+  clip_patches:
+    tsv: /path/to/clip_patches/val/vgg-patches.tsv
+    npy: /path/to/clip_patches/val/vgg-patches/clip_patches.npy
+    cache_items: 128
+
+AudioCaps:
+  tsv: /path/to/mmaudio_cache/audiocaps.tsv
+  memmap_dir: /path/to/mmaudio_cache/audiocaps
+
+AudioSetSL:
+  tsv: /path/to/mmaudio_cache/audioset_sl.tsv
+  memmap_dir: /path/to/mmaudio_cache/audioset_sl
+
+BBCSound:
+  tsv: /path/to/mmaudio_cache/bbcsound.tsv
+  memmap_dir: /path/to/mmaudio_cache/bbcsound
+
+FreeSound:
+  tsv: /path/to/mmaudio_cache/freesound.tsv
+  memmap_dir: /path/to/mmaudio_cache/freesound
+
+Clotho:
+  tsv: /path/to/mmaudio_cache/clotho.tsv
+  memmap_dir: /path/to/mmaudio_cache/clotho
+
+Example_video:
+  tsv: ./training/example_output/memmap/vgg-example.tsv
+  memmap_dir: ./training/example_output/memmap/vgg-example
+
+Example_audio:
+  tsv: ./training/example_output/memmap/audio-example.tsv
+  memmap_dir: ./training/example_output/memmap/audio-example

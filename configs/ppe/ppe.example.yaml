@@ -1,0 +1,6 @@
+defaults: []
+
+input_root: /path/to/videos
+output_root: /path/to/ppe_outputs
+fps: 8
+

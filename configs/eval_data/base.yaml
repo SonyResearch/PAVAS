@@ -1,0 +1,15 @@
+AudioCaps:
+  audio_path: /path/to/audiocaps/audio
+  csv_path: /path/to/audiocaps/data.csv
+
+AudioCaps_full:
+  audio_path: /path/to/audiocaps_full/audio
+  csv_path: /path/to/audiocaps_full/data.csv
+
+MovieGen:
+  video_path: /path/to/moviegen/video_with_audio
+  jsonl_path: /path/to/moviegen/metadata
+
+VGGSound:
+  video_path: /path/to/vggsound/video
+  csv_path: ./sets/vggsound.csv

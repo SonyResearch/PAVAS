@@ -1,0 +1,16 @@
+{
+  "mass": {
+    "mean": 434.83979218595925,
+    "std": 1705.1551893484007,
+    "count": 165703
+  },
+  "velocity": {
+    "mean": 0.9494583360427404,
+    "std": 4.174612501988145,
+    "count": 13677299,
+    "missing_count": 25692966,
+    "missing_ratio": 0.6525982489576841
+  },
+  "partial": true,
+  "videos_processed": 84100
+}

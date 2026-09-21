@@ -1,0 +1,28 @@
+{
+  "mass": {
+    "mean": 431.55964512042016,
+    "std": 1701.0068082643481,
+    "log_mean": 3.0249620891479605,
+    "log_std": 2.3860459362681987,
+    "count": 225110,
+    "missing_file_count": 0,
+    "indexed_files": 171762,
+    "clipped_count": 12983,
+    "mass_min": 0.0,
+    "mass_max": 10000.0
+  },
+  "velocity": {
+    "mean": 0.9380425453442867,
+    "std": 4.128274807870855,
+    "log_mean": 0.3784931003494543,
+    "log_std": 0.5392405040200193,
+    "count": 18616940,
+    "missing_count": 35127011,
+    "missing_ratio": 0.6535993418124395,
+    "vel_clipped": 0
+  },
+  "mass_log_mean": 3.0249620891479605,
+  "mass_log_std": 2.3860459362681987,
+  "velocity_log_mean": 0.3784931003494543,
+  "velocity_log_std": 0.5392405040200193
+}
